@@ -1,6 +1,7 @@
 package com.deinerrv.RedditClone.service;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -46,7 +47,6 @@ public class AuthService {
 
         NotificationEmail email = new NotificationEmail();
         email.setSubject("Please Activate your Account");
-        email.setBody(token);
         email.setRecipient(user.getEmail());
         email.setBody("Thank you for signing up to Spring Reddit, " +
         "please click on the below url to activate your account : " +
@@ -63,5 +63,31 @@ public class AuthService {
         
         verificationTokenRepository.save(verificationToken);
         return token;
+    }
+
+    public void verifyAccount(String token){
+        Optional<VerificationToken> verificationToken = verificationTokenRepository.findByToken(token);
+        verificationToken.orElseThrow(() -> new SpringRedditException("Invalid Token"));
+
+        fetchUserAndEnable(verificationToken.get());
+    }
+
+
+    @Transactional
+    public void fetchUserAndEnable(VerificationToken token){
+        Long userId = token.getUser().getId();
+
+        User user = userRepository.findById(userId).orElseThrow(() -> new SpringRedditException("No user found for validation"));
+        user.setEnabled(true);
+        userRepository.save(user);
+
+        verificationTokenRepository.deleteById(token.getId());
+
+        NotificationEmail email = new NotificationEmail();
+        email.setSubject("Account Verified");
+        email.setRecipient(user.getEmail());
+        email.setBody("Your Account has been successfully verified");
+
+        mailService.sendMail(email);
     }
 }

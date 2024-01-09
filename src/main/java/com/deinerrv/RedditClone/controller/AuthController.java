@@ -12,6 +12,9 @@ import com.deinerrv.RedditClone.exception.SpringRedditException;
 import com.deinerrv.RedditClone.service.AuthService;
 
 import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
 
 @AllArgsConstructor
 @RestController
@@ -25,4 +28,11 @@ public class AuthController {
         authService.signup(registerRequest);
         return new ResponseEntity<>("User Successfully Registered",HttpStatus.OK);
     }
+
+    @GetMapping("accountVerification/{token}")
+    public ResponseEntity<String> getMethodName(@PathVariable String token) {
+        authService.verifyAccount(token);
+        return new ResponseEntity<>("Account Activated Successfully",HttpStatus.OK);
+    }
+    
 }
