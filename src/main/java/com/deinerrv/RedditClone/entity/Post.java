@@ -30,30 +30,30 @@ public class Post {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @NotBlank(message = "Post name can't be empty or null")
-    String postName;
+    private String postName;
 
     @Nullable
-    String url;
+    private String url;
 
     @Nullable
     @Lob
-    String description;
+    private String description;
 
     @Builder.Default
-    Integer voteCount = 0;
+    private Integer voteCount = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    User user;
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subreddit_id", referencedColumnName = "id")
-    Subreddit subreddit;
+    private Subreddit subreddit;
 
     @Temporal(TemporalType.TIMESTAMP)
-    Instant createdAt;
+    private Instant createdAt;
 
 }

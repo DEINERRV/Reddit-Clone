@@ -27,21 +27,21 @@ public class Subreddit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @NotBlank(message = "Community name is required")
-    String name;
+    private String name;
 
     @NotBlank(message = "Description is required")
-    String description;
+    private String description;
 
     @OneToMany(fetch = FetchType.LAZY)
-    List<Post> posts;
+    private List<Post> posts;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    User user;
+    private User user;
 
     @Temporal(TemporalType.TIMESTAMP)
-    Instant createdAt;
+    private Instant createdAt;
 
 }

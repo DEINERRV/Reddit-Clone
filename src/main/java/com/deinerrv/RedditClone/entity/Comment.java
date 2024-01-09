@@ -26,19 +26,19 @@ public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @NotBlank(message = "Text is required")
-    String text;
+    private String text;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", referencedColumnName = "id")
-    Post post;
+    private Post post;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    User user;
+    private User user;
     
     @Temporal(TemporalType.TIMESTAMP)
-    Instant createdAt;
+    private Instant createdAt;
 }

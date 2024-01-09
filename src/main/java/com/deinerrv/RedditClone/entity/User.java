@@ -25,21 +25,21 @@ public class User {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @NotBlank(message = "Usernemae is required")
-    String username;
+    private String username;
 
     @NotBlank(message = "Password is required")
-    String password;
+    private String password;
 
     @Email(message = "Email must be valid")
     @NotEmpty(message = "Email is required")
-    String email;
+    private String email;
 
     boolean enabled;
 
     @Temporal(TemporalType.TIMESTAMP)
-    Instant createdAt;
+    private Instant createdAt;
     
 }
