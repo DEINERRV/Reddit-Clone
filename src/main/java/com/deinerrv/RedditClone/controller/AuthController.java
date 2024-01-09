@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.deinerrv.RedditClone.dto.AuthenticationResponse;
+import com.deinerrv.RedditClone.dto.LoginRequest;
 import com.deinerrv.RedditClone.dto.RegisterRequest;
 import com.deinerrv.RedditClone.exception.SpringRedditException;
 import com.deinerrv.RedditClone.service.AuthService;
@@ -35,4 +37,8 @@ public class AuthController {
         return new ResponseEntity<>("Account Activated Successfully",HttpStatus.OK);
     }
     
+    @PostMapping("/login")
+    public AuthenticationResponse login(@RequestBody LoginRequest loginRequest) {
+        return authService.login(loginRequest);
+    }
 }

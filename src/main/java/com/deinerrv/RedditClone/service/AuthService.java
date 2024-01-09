@@ -4,10 +4,16 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.deinerrv.RedditClone.dto.AuthenticationResponse;
+import com.deinerrv.RedditClone.dto.LoginRequest;
 import com.deinerrv.RedditClone.dto.RegisterRequest;
 import com.deinerrv.RedditClone.entity.NotificationEmail;
 import com.deinerrv.RedditClone.entity.User;
@@ -23,10 +29,13 @@ import lombok.AllArgsConstructor;
 public class AuthService {
     
 
-    final PasswordEncoder passwordEncoder;
-    final UserRepository userRepository;
-    final VerificationTokenRepository verificationTokenRepository;
-    final MailService mailService;
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final VerificationTokenRepository verificationTokenRepository;
+    private final MailService mailService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtProvider jwtProvider;
+
 
     @Transactional
     public void signup(RegisterRequest registerRequest) throws SpringRedditException{
@@ -89,5 +98,21 @@ public class AuthService {
         email.setBody("Your Account has been successfully verified");
 
         mailService.sendMail(email);
+    }
+
+    public AuthenticationResponse login(LoginRequest loginRequest) {
+        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),
+                loginRequest.getPassword()));
+                
+        SecurityContextHolder.getContext().setAuthentication(authenticate);
+
+        String token = jwtProvider.generateToken(authenticate);
+
+        return AuthenticationResponse.builder()
+                .authenticationToken(token)
+                //.refreshToken(refreshTokenService.generateRefreshToken().getToken())
+                .expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
+                .username(loginRequest.getEmail())
+                .build();
     }
 }
