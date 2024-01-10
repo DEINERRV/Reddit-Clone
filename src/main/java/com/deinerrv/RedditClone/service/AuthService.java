@@ -9,6 +9,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -109,10 +110,19 @@ public class AuthService {
         String token = jwtProvider.generateToken(authenticate);
 
         return AuthenticationResponse.builder()
-                .authenticationToken(token)
-                //.refreshToken(refreshTokenService.generateRefreshToken().getToken())
-                .expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
-                .username(loginRequest.getEmail())
-                .build();
+            .authenticationToken(token)
+            //.refreshToken(refreshTokenService.generateRefreshToken().getToken())
+            .expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
+            .username(loginRequest.getEmail())
+            .build();
+    }
+
+    @Transactional(readOnly = true)
+    public User getCurrentUser() {
+        Jwt principal = (Jwt) SecurityContextHolder
+            .getContext().getAuthentication().getPrincipal();
+
+        return userRepository.findByEmail(principal.getSubject())
+                .orElseThrow(() -> new SpringRedditException("Account not found with this email - " + principal.getSubject()));
     }
 }
