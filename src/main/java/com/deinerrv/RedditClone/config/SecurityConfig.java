@@ -52,15 +52,16 @@ public class SecurityConfig{
                     .permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/subreddit")
                     .permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/posts/")
+                .requestMatchers(HttpMethod.GET, "/api/post/")
                     .permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/posts/**")
+                .requestMatchers(HttpMethod.GET, "/api/post/**")
                     .permitAll()
                 .requestMatchers(
-                    "/v2/api-docs",
+                    "/v3/api-docs/**",
                     "/configuration/ui",
                     "/swagger-resources/**",
                     "/configuration/security",
+                    "/swagger-ui/**",
                     "/swagger-ui.html",
                     "/webjars/**"
                 ).permitAll()
