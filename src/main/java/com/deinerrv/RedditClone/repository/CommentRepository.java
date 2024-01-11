@@ -11,4 +11,6 @@ import com.deinerrv.RedditClone.entity.Comment;
 public interface CommentRepository extends JpaRepository<Comment,Long>{
     Page<Comment> findAllByPostId(Pageable pageable, Long postId);
     Page<Comment> findAllByUserId(Pageable pageable, Long userId);
+
+    int countByPostId(Long postId);
 }
