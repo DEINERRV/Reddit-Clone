@@ -9,10 +9,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.deinerrv.RedditClone.dto.AuthenticationResponse;
 import com.deinerrv.RedditClone.dto.LoginRequest;
+import com.deinerrv.RedditClone.dto.RefreshTokenRequest;
 import com.deinerrv.RedditClone.dto.RegisterRequest;
 import com.deinerrv.RedditClone.exception.SpringRedditException;
 import com.deinerrv.RedditClone.service.AuthService;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,4 +43,19 @@ public class AuthController {
     public AuthenticationResponse login(@RequestBody LoginRequest loginRequest) {
         return authService.login(loginRequest);
     }
+
+    @PostMapping("/refresh/token")
+    public AuthenticationResponse refreshToken(@Valid @RequestBody RefreshTokenRequest refreshToken) {
+        return authService.refreshToken(refreshToken);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@Valid @RequestBody RefreshTokenRequest refreshToken){
+        authService.logout(refreshToken);
+        return ResponseEntity
+            .ok()
+            .body("Logout Successfully");
+    }
+    
+    
 }

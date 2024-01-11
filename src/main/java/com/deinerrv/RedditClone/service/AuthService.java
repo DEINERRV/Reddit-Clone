@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.deinerrv.RedditClone.dto.AuthenticationResponse;
 import com.deinerrv.RedditClone.dto.LoginRequest;
+import com.deinerrv.RedditClone.dto.RefreshTokenRequest;
 import com.deinerrv.RedditClone.dto.RegisterRequest;
 import com.deinerrv.RedditClone.entity.NotificationEmail;
 import com.deinerrv.RedditClone.entity.User;
@@ -37,7 +38,7 @@ public class AuthService {
     private final MailService mailService;
     private final AuthenticationManager authenticationManager;
     private final JwtProvider jwtProvider;
-
+    private final RefreshTokenService refreshTokenService;
 
     @Transactional
     public void signup(RegisterRequest registerRequest) throws SpringRedditException{
@@ -112,7 +113,7 @@ public class AuthService {
 
         return AuthenticationResponse.builder()
             .authenticationToken(token)
-            //.refreshToken(refreshTokenService.generateRefreshToken().getToken())
+            .refreshToken(refreshTokenService.generateRefreshToken().getToken())
             .expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
             .username(loginRequest.getEmail())
             .build();
@@ -131,4 +132,21 @@ public class AuthService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return !(authentication instanceof AnonymousAuthenticationToken) && authentication.isAuthenticated();
     }
+
+    public AuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
+        refreshTokenService.validateRefreshToken(refreshTokenRequest.getRefreshToken());
+        String token = jwtProvider.generateTokenWithUserName(getCurrentUser().getEmail());
+        
+        return AuthenticationResponse.builder()
+                .authenticationToken(token)
+                .refreshToken(refreshTokenRequest.getRefreshToken())
+                .expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
+                .username(getCurrentUser().getEmail())
+                .build();
+    }
+
+    public void logout(RefreshTokenRequest refreshTokenRequest){
+        refreshTokenService.deleteRefreshToken(refreshTokenRequest.getRefreshToken());
+    }
+
 }
